@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Authenticating…</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f7f9fc;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      text-align: center;
+    }
+
+    .spinner {
+      border: 4px solid #e0e0e0;
+      border-top: 4px solid #4285f4;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .status {
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="spinner"></div>
+    <div class="status" id="status">Authenticating…</div>
+  </div>
+
+  <script>
+    const statusEl = document.getElementById("status");
+    const hash = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hash.get("access_token");
+    const expiresIn = hash.get("expires_in");
+    const tokenType = hash.get("token_type");
+
+    if (accessToken) {
+      window.opener?.postMessage({
+        access_token: accessToken,
+        expires_in: expiresIn ? parseInt(expiresIn, 10) : undefined,
+        token_type: tokenType
+      }, '*');
+
+      statusEl.textContent = "Login successful. You may close this window.";
+      setTimeout(() => window.close(), 1000);
+    } else {
+      statusEl.textContent = "Failed to retrieve access token.";
+    }
+  </script>
+</body>
+
+</html>
